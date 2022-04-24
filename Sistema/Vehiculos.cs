@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 
 namespace Sistema
 {
-    public class Vehiculos
+    public abstract class Vehiculo : IEquatable<Vehiculo>, IValidable
     {
         //Atributos
         private string marca;
@@ -14,7 +15,7 @@ namespace Sistema
         private DateTime ultimoServicio;
 
         //Constructor
-        public Vehiculos(string marca, string modelo, int anio, string matricula, DateTime ultimoServicio)
+        public Vehiculo(string marca, string modelo, int anio, string matricula, DateTime ultimoServicio)
         {
             this.marca = marca;
             this.modelo = modelo;
@@ -54,88 +55,78 @@ namespace Sistema
             set { ultimoServicio = value; }
         }
 
-
-        //Validaciones
-        public bool Validar()
+        public DateTime CalcularProximoServicio
         {
-            return ValidarMarca() && ValidarModelo() && SoloLetras(this.marca) && SoloLetras(this.modelo) && ValidarAnio() && ValidarMatricula(this.matricula);
+            get { return ProximoServicio();}
         }
 
 
-        public bool ValidarMarca()
+
+        //Validaciones
+        public virtual bool Validar()
+        {
+            return
+                ValidarMarca() &&
+                ValidarModelo() &&
+                ValidarAnio() &&
+                ValidarMatricula() &&
+                Validaciones.SoloLetras(this.marca) &&
+                Validaciones.SoloLetras(this.modelo);
+        }
+
+        private bool ValidarMarca()
         {
             return !string.IsNullOrEmpty(this.marca);
         }
 
 
-        public bool ValidarModelo()
+        private bool ValidarModelo()
         {
             return !string.IsNullOrEmpty(this.modelo);
         }
 
-
-        public bool SoloLetras(string palabra)
-        {
-            bool exito = true;
-            string palabraMinusculas = palabra.ToLower();
-            int i = 0;
-            char letra = palabraMinusculas[i];
-
-            do
-            {
-                if(letra <= 'a' && letra >= 'z')
-                {
-                    exito = false;
-                }
-                i++;
-            } while (!exito && i < palabraMinusculas.Length);
-
-            return exito;
-        }
-
-
-        public bool SoloNumeros(string palabra)
-        {
-            bool exito = true;
-            
-            int i = 0;
-            char letra = palabra[i];
-
-            do
-            {
-                if (letra <= '0' && letra >= '9')
-                {
-                    exito = false;
-                }
-                i++;
-            } while (!exito && i < palabra.Length);
-
-            return exito;
-        }
-
-
-
-        public bool ValidarAnio()
+        private bool ValidarAnio()
         {
             return this.anio >= 1990 && this.anio <= DateTime.Now.Year;
         }
 
-
-
-        public bool ValidarMatricula(string matricula)
+        private bool ValidarMatricula()
         {
             bool exito = false;
-            string tresPimeros = matricula.Substring(0, 3);
-            string tresUltimos = matricula.Substring(0, 3);
-
-            if(SoloLetras(tresPimeros) && SoloNumeros(tresUltimos))
+            string tresPimeros = this.matricula.Substring(0, 3);
+            string tresUltimos = this.matricula.Substring(3, 3);
+            if (Validaciones.SoloLetras(tresPimeros) && Validaciones.SoloNumeros(tresUltimos))
             {
                 exito = true;
             }
-
             return exito;
         }
 
 
+        public bool Equals(Vehiculo unVehiculo)
+        {
+            return unVehiculo != null && Matricula == unVehiculo.Matricula;
+        }
+
+        public DateTime ProximoServicio()
+        {
+            return this.ultimoServicio.AddYears(1);
+        }
+    }
+
+    public class OrdenarVehiculosPorMarca : IComparer<Vehiculo>
+    {
+        public int Compare(Vehiculo x, Vehiculo y)
+        {
+            return x.Marca.CompareTo(y.Marca);
+        }
+    }
+
+    public class OrdenarVehiculosPorAnio : IComparer<Vehiculo>
+    {
+        public int Compare(Vehiculo x, Vehiculo y)
+        {
+            return x.Anio.CompareTo(y.Anio);
+        }
     }
 }

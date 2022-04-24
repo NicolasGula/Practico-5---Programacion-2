@@ -1,16 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Sistema
 {
-    public class Carga : Vehiculos
+    public class Carga : Vehiculo, IValidable
     {
         //Atributos
-        private decimal capacidadCarga;
+        private int capacidadCarga;
         private int cantidadEjes;
 
-
         //Propertys
-        public decimal CapacidadCarga
+        public int CapacidadCarga
         {
             get { return capacidadCarga; }
             set { capacidadCarga = value; }
@@ -22,25 +23,25 @@ namespace Sistema
             set { cantidadEjes = value; }
         }
 
-
         //Constructor
-        public Carga(decimal capacidadCarga, int cantidadEjes, string marca, string modelo, int anio, string matricula, DateTime ultimoServicio) : base(marca, modelo, anio, matricula, ultimoServicio)
+        public Carga(int capacidadCarga, int cantidadEjes, string marca, string modelo, int anio, string matricula, DateTime ultimoServicio) : base(marca, modelo, anio, matricula, ultimoServicio)
         {
             this.CapacidadCarga = capacidadCarga;
             this.CantidadEjes = cantidadEjes;
         }
 
-
-        public override string ToString()
+        public override bool Validar()
         {
-            return $"MARCA: {base.Marca} MATRICULA: {base.Matricula} ULTIMO SERVICIO: {UltimoServicio} DE CARGA ";
+            return
+                base.Validar() && //Validaciones que hereda de Vehiculos.
+                Validaciones.ValidarNumeroMayorACero(cantidadEjes) &&
+                Validaciones.ValidarNumeroMayorACero(capacidadCarga);
         }
 
-
-        public override bool Equals(object obj)
+        //ToString
+        public override string ToString()
         {
-            Carga carga = obj as Carga;
-            return obj != null && Matricula == carga.Matricula;
+            return $"MARCA: {base.Marca}\nMATRICULA: {base.Matricula}\nANIO: {base.Anio}\nULTIMO SERVICIO: {UltimoServicio.ToString("d")}\nPROXIMO SERVICIO: {base.ProximoServicio().ToString("d")}\nTIPO : DE CARGA\n-------------------";
         }
     }
 }

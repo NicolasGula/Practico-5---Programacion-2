@@ -6,8 +6,7 @@ namespace Sistema
 {
     public class Administradora
     {
-        List<Comunes> comunes = new List<Comunes>();
-        List<Carga> carga = new List<Carga>();
+        List<Vehiculo> vehiculos = new List<Vehiculo>();
 
         public Administradora()
         {
@@ -17,18 +16,18 @@ namespace Sistema
 
         private void precargaVehiculosComunes()
         {
-            Comunes unComun;
+            Comun unComun;
             
-            unComun = new Comunes("Diesel", 4, "Mercedes", "Fargo", 2018, "ert456", new DateTime(2019, 12, 21));
+            unComun = new Comun("nafta", 4, "Mercedes", "Fargo", 2018, "ert456", new DateTime(2019, 12, 21));
             AgregarVehiculoComun(unComun);
 
-            unComun = new Comunes("Gas Oil", 2, "Fusca", "Matrez", 2020, "fgh257", new DateTime(2020, 11, 15));
+            unComun = new Comun("gasoil", 2, "Fusca", "Matrez", 2015, "fgh257", new DateTime(2020, 11, 15));
             AgregarVehiculoComun(unComun);
 
-            unComun = new Comunes("Gas Oil", 3, "Ferrari", "Pilo", 2021, "sew345", new DateTime(2021, 11, 23));
+            unComun = new Comun("electrico", 4, "Ferrari", "Pilo", 2005, "sew345", new DateTime(2021, 11, 23));
             AgregarVehiculoComun(unComun);
 
-            unComun = new Comunes("Diesel", 6, "Primordial", "Fargo", 2012, "yui789", new DateTime(2021, 10, 12));
+            unComun = new Comun("nafta", 6, "Primordial", "Fargo", 2012, "yui789", new DateTime(2021, 10, 12));
             AgregarVehiculoComun(unComun);
         }
 
@@ -36,54 +35,52 @@ namespace Sistema
         {
             Carga unCarga;
             
-            unCarga = new Carga(200, 4, "Fiat", "ElCatorce", 2020, "wdc345", new DateTime(2020, 11, 29));
+            unCarga = new Carga(200, 4, "Fiat", "ElCatorce", 2001, "wdc345", new DateTime(2020, 11, 29));
             AgregarVehiculoCarga(unCarga);
 
-            unCarga = new Carga(300, 5, "Mercurio", "ebe", 2021, "ert337", new DateTime(2021, 11, 29));
+            unCarga = new Carga(300, 5, "Mercurio", "Ebe", 2016, "ert337", new DateTime(2021, 11, 29));
             AgregarVehiculoCarga(unCarga);
 
-            unCarga = new Carga(100, 3, "McLaren", "Modleo2", 2022, "wdc234", new DateTime(2021, 11, 29));
+            unCarga = new Carga(100, 3, "McLaren", "Modleo", 2017, "wdc234", new DateTime(2021, 11, 29));
             AgregarVehiculoCarga(unCarga);
 
-            unCarga = new Carga(500, 2, "Fiorell", "lala", 2022, "wdc789", new DateTime(2021, 11, 29));
+            unCarga = new Carga(500, 2, "Fiorell", "lala", 2015, "wdc789", new DateTime(2021, 11, 29));
             AgregarVehiculoCarga(unCarga);
 
         }
 
-
-        public bool AgregarVehiculoComun(Comunes unComun)
+        public bool AgregarVehiculoComun(Comun unComun)
         {
             bool exito = false;
 
-            if(unComun != null && unComun.Validar() && !comunes.Contains(unComun))
+            if(unComun != null && unComun.Validar() && !vehiculos.Contains(unComun))
             {
-                comunes.Add(unComun);
+                vehiculos.Add(unComun);
                 exito = true;
             }
             return exito;
         }
-
 
         public bool AgregarVehiculoCarga(Carga unCarga)
         {
             bool exito = false;
-
-            if (unCarga != null && unCarga.Validar() && !carga.Contains(unCarga))
+            if (unCarga != null && unCarga.Validar() && !vehiculos.Contains(unCarga))
             {
-                carga.Add(unCarga);
+                vehiculos.Add(unCarga);
                 exito = true;
             }
             return exito;
         }
 
-
-        public List<Comunes> VehiculosComunes()
+        public List<Comun> VehiculosComunes()
         {
-            List<Comunes> aux = new List<Comunes>();
-
-            foreach (Comunes item in comunes)
+            List<Comun> aux = new List<Comun>();
+            foreach (Vehiculo item in vehiculos)
             {
-                aux.Add(item);
+                if(item is Comun)
+                {
+                    aux.Add((Comun)item);
+                }
             }
             return aux;
         }
@@ -91,13 +88,55 @@ namespace Sistema
         public List<Carga> VehiculosCarga()
         {
             List<Carga> aux = new List<Carga>();
-
-            foreach (Carga item in carga)
+            foreach (Vehiculo item in vehiculos)
             {
-                aux.Add(item);
+                if(item is Carga)
+                {
+                    aux.Add((Carga)item);
+                }
+                
             }
             return aux;
         }
+
+
+        public List<Vehiculo> TodosLosVehiculosOrdenadosPorMarca()
+        {
+            List<Vehiculo> aux = new List<Vehiculo>();
+            foreach (Vehiculo item in vehiculos)
+            { 
+                aux.Add(item);
+            }
+
+            aux.Sort(new OrdenarVehiculosPorMarca());
+            return aux;
+        }
+
+        public List<Vehiculo> TodosLosVehiculosOrdenadosPorAnio()
+        {
+            List<Vehiculo> aux = new List<Vehiculo>();
+            foreach (Vehiculo item in vehiculos)
+            {
+                aux.Add(item);
+            }
+
+            aux.Sort(new OrdenarVehiculosPorAnio());
+            return aux;
+        }
+
+        public List<Vehiculo> ServicioPendienteEsteAnio()
+        {
+            List<Vehiculo> aux = new List<Vehiculo>();
+            foreach (Vehiculo item in vehiculos)
+            {
+                if(item.CalcularProximoServicio.CompareTo(DateTime.Now) == 1)
+                {
+                    aux.Add(item);
+                }
+            }
+            return aux;
+        }
+
 
     }
 }
